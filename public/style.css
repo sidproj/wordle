@@ -173,7 +173,7 @@ footer{
 
 .onResult{
     width:40%;
-    height:30%;
+    height:33%;
     background-color: #fafafa;
     display: flex;
     flex-direction: column;
@@ -181,7 +181,7 @@ footer{
     justify-content: center;
     row-gap: 2em;
     border-radius: 0.5em;
-
+    padding:0px 1em
 }
 .onResult h1{
     color:#444;
@@ -215,4 +215,8 @@ footer{
 
 .lost{
     background-color:rgb(218, 60, 3);
+}
+
+.lostword{
+    color:rgb(218, 60, 3);
 }

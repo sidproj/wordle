@@ -53,6 +53,8 @@ const decodeJWT=(token)=>{
 
 //get randon word from word-list-json
 
+let propWord="";
+
 const createWord=()=>{
     const randonIndex = Math.floor(Math.random()*allWords.length);
 
@@ -68,40 +70,55 @@ app.get("/",(req,res)=>{
     if(!req.cookies['jwt']){
         
         const jwtToken=createJWT(createWord());
+        const turns=createJWT(0);
 
         res.cookie('jwt',jwtToken,{ httpOnly:true });
+        res.cookie('turn',turns,{ httpOnly:true });
     }
-    res.render("index");
+    res.render("index"); 
 })
 
 app.post("/checkword",(req,res)=>{
     const word  = req.body['word'];
-    
+    const cookieTurn = decodeJWT(req.cookies['turn']);
     if( word.length == 5){
-        const decodedJWT=decodeJWT(req.cookies['jwt']).toUpperCase();
+        console.log(cookieTurn);
+        if(cookieTurn < 5){
+            
+            const decodedJWT=decodeJWT(req.cookies['jwt']).toUpperCase();
 
-        if(word == decodedJWT){
-            res.send({status:'won'});
+            if(word == decodedJWT){
+                res.send({status:'won'});
+            }
+            else{
+                let state={};
+                let i=0;
+
+                for( i ; i<5 ; i++ ){
+                    if( decodedJWT.includes(word[i]) ){
+                        state[i]=1;
+                    }
+                    else{
+                        state[i]=0;
+                    }
+                    if( decodedJWT[i] == word[i] ){
+                        state[i]=2;
+                    }
+                }
+                
+                const turns=createJWT(cookieTurn+1);
+                res.cookie('turn',turns,{ httpOnly:true });
+                
+                console.log(state);
+                res.send({status:'continue',state});
+            }
+
         }
         else{
-            let state={};
-            let i=0;
-
-            for( i ; i<5 ; i++ ){
-                if( decodedJWT.includes(word[i]) ){
-                    state[i]=1;
-                }
-                else{
-                    state[i]=0;
-                }
-                if( decodedJWT[i] == word[i] ){
-                    state[i]=2;
-                }
-            }
-            console.log(state);
-            res.send({status:'continue',state});
+            const decodedJWT=decodeJWT(req.cookies['jwt']).toUpperCase();
+            propWord=decodedJWT;
+            res.send({status:"lost",word:decodedJWT});
         }
-
         // console.log(decodedJWT);
     }
     //console.log(word);
@@ -109,7 +126,11 @@ app.post("/checkword",(req,res)=>{
 
 app.get("/newWord",(req,res)=>{
     const jwtToken=createJWT(createWord());
+    const turns=createJWT(0);
+
     res.cookie('jwt',jwtToken,{ httpOnly:true });
+    res.cookie('turn',turns,{ httpOnly:true });
+
     res.redirect('/');
 })
 

@@ -14,6 +14,7 @@
 <div class="dimScreen" id="lose">
     <div class="onResult">
         <h1>You Lost! Better luck next time</h1>
+        <h1 class="lostword" id="lostword"></h1>
         <a href="/newWord">
             <div class="nextword lost">
                 <h3>Next Word!</h3>
@@ -185,7 +186,13 @@
             const res = await fetch(url,options);
             const result = await res.json();
             
-            if(result['status'] == "won" ){
+            if(result['status']=="lost"){
+                
+                document.getElementById("lose").style.display="flex";
+                document.getElementById("lostword").innerText=result['word'];
+                console.log(result['word']);
+            }
+            else if(result['status'] == "won" ){
                 row.map((child)=>{
                     child.className="input present";
                     child.id="";
