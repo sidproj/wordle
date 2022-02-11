@@ -220,3 +220,43 @@ footer{
 .lostword{
     color:rgb(218, 60, 3);
 }
+
+@media only screen and (max-width: 600px) {
+    
+    .input{
+        width:1.6em;
+        height:1.6em;
+        font-size: 1.7rem;
+    }
+
+    
+    .buttonContainer{
+        row-gap: 0.5em;
+    }
+    .row{
+        column-gap: 0.2em;
+    }
+
+    .buttons{
+        font-size: 0.65em;
+        height:3.5em;
+    }
+    .special{
+        font-size: 0.65em;
+        height:3.5em;
+        width:5em;
+    }
+
+
+    .enter{
+        position: fixed;
+        bottom:5em;
+        left:2em;
+    }
+    .delete{
+        position: fixed;
+        bottom:5em;
+        right:2em;
+    }
+
+  }
