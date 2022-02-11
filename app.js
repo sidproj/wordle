@@ -15,7 +15,8 @@ app.use(bodyParser.urlencoded({
     extended:true,
 }));
 
-const port="3000";
+const port= process.env.PORT || "3000";
+
 const SECERET_JWT_KEY="&Ou388df'^8.~.t^n#gd_TPOgEm~J&~T.}-XA)?}A~r7c8+{L;Wq{!N8e>iSq>G";
 const allWords=words.filter((word)=>{
     if(word.length==5){
