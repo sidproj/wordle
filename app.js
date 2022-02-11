@@ -83,7 +83,7 @@ app.post("/checkword",(req,res)=>{
     const cookieTurn = decodeJWT(req.cookies['turn']);
     if( word.length == 5){
         console.log(cookieTurn);
-        if(cookieTurn < 5){
+        if(cookieTurn < 7){
             
             const decodedJWT=decodeJWT(req.cookies['jwt']).toUpperCase();
 
