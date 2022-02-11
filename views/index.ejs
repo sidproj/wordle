@@ -1,0 +1,232 @@
+<%- include('header')  -%>
+
+<div class="dimScreen" id="win">
+    <div class="onResult">
+        <h1>You Won! Congratulations! </h1>
+        <a href="/newWord">
+            <div class="nextword won">
+                <h3>Next Word!</h3>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="dimScreen" id="lose">
+    <div class="onResult">
+        <h1>You Lost! Better luck next time</h1>
+        <a href="/newWord">
+            <div class="nextword lost">
+                <h3>Next Word!</h3>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div class="mainContainer">
+    <div class="inputContainer">
+        <div class="row" id="onGoing">
+            <div class="input" id="current"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+        </div>
+        <div class="row">
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+        </div>
+        <div class="row">
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+        </div>
+        <div class="row">
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+        </div> 
+        <div class="row">
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+        </div>
+        <div class="row">
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+            <div class="input"></div>
+        </div>
+    </div>
+
+    <div class="buttonContainer">
+        <div class="row">
+            <div class="buttons">Q</div>
+            <div class="buttons">W</div>
+            <div class="buttons">E</div>
+            <div class="buttons">R</div>
+            <div class="buttons">T</div>
+            <div class="buttons">Y</div>
+            <div class="buttons">U</div>
+            <div class="buttons">I</div>
+            <div class="buttons">O</div>
+            <div class="buttons">P</div>
+        </div>
+        <div class="row">
+            <div class="buttons">A</div>
+            <div class="buttons">S</div>
+            <div class="buttons">D</div>
+            <div class="buttons">F</div>
+            <div class="buttons">G</div>
+            <div class="buttons">H</div>
+            <div class="buttons">J</div>
+            <div class="buttons">K</div>
+            <div class="buttons">L</div>
+        </div>
+        <div class="row">
+            <div class="special" id="submit" onclick="checkWord()">Enter</div>
+            <div class="buttons">Z</div>
+            <div class="buttons">X</div>
+            <div class="buttons">C</div>
+            <div class="buttons">V</div>
+            <div class="buttons">B</div>
+            <div class="buttons">N</div>
+            <div class="buttons">M</div>
+            <div class="special" id="delete" onclick="deleteLetter()">Delete</div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script>
+    const letters=5;
+    let entered=1;
+    window.onload=()=>{
+        entered=1;
+        const buttons = [...document.getElementsByClassName("buttons")];
+
+        //add onmouseup event on keyboard displayed at bottom
+        buttons.map(button =>{
+            button.addEventListener('mouseup',(e)=>{
+                const letter = e.target.innerText;
+                
+                let current = document.getElementById("current");
+                
+                if(current && current.innerText==""){
+                    current.innerText=letter;
+                    current.classList.add("added");
+                    
+                    if(current.nextElementSibling){
+                        current.nextElementSibling.id="current";
+                        current.id="";
+                    }
+                    
+                }
+                else if(current && current.nextElementSibling){
+                    if(current.nextElementSibling.innerText==""){
+                        current.nextElementSibling.innerText=letter;
+                        current.nextElementSibling.classList.add("added");
+
+                        if(current.nextElementSibling.nextElementSibling){
+                            current.nextElementSibling.nextElementSibling.id="current";
+                            current.id="";
+                            current.nextElementSibling.id="";
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    const deleteLetter=()=>{
+        const current=document.getElementById("current");
+        
+        if(current && current.innerText!=""){
+            current.innerText="";
+            current.classList.remove("added");
+
+        }
+        else if(current.previousElementSibling){
+            current.previousElementSibling.innerText="";
+            current.previousElementSibling.classList.remove("added");
+
+            
+            if(current.previousElementSibling.previousElementSibling){
+                current.previousElementSibling.previousElementSibling.id="current";
+                current.previousElementSibling.id="";
+            }
+        }
+    }
+
+    const checkWord = async ()=>{
+        const row = [...document.getElementById("onGoing").children];
+        let word="";
+        row.map((input)=>{
+            word+=input.innerText;
+        });
+
+        if( word.length == 5 ){
+            const url="/checkword";
+            const options={
+                method:"POST",
+                body:JSON.stringify({word}),
+                headers:{'Content-Type':"application/json"},
+            }
+            const res = await fetch(url,options);
+            const result = await res.json();
+            
+            if(result['status'] == "won" ){
+                row.map((child)=>{
+                    child.className="input present";
+                    child.id="";
+                });
+                console.log("won");
+                document.getElementById("win").style.display="flex";
+            }
+            else if(result['status'] == 'continue' ){
+                let i=0;
+                
+                console.log(result);
+                for( i ; i<5 ; i++ ){
+                    row[i].id="";
+                    if( result['state'][i] == 0 ){
+                        row[i].className="input absent";
+                        row[i].id="";
+                    }
+                    else if( result['state'][i] == 1 ){
+                        row[i].className="input late";
+                    }
+                    else if ( result['state'][i] == 2 ){
+                        row[i].className="input present";
+                    }
+                }
+                // row.nextElementSibling.id="onGoing";
+                const curRow=document.getElementById("onGoing");
+                curRow.id='';
+                
+                if(curRow.nextElementSibling){
+                    curRow.nextElementSibling.id="onGoing";
+                    curRow.nextElementSibling.children[0].id="current";
+                }
+                else{
+                    console.log("lost");
+                    document.getElementById("lose").style.display="flex";
+                }
+                
+            }
+        }
+    }
+
+</script>
+
+</html>
